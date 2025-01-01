@@ -22,7 +22,7 @@ public class RateLimitTest {
         rateLimit = new RateLimit();
         // Set rate limiting algorithm and RPM
         rateLimit.rateLimitAlgo = "fixed"; // Change to "moving" to test the sliding window
-        rateLimit.rateLimitRPM = 5; // Allow 5 requests per minute
+        rateLimit.rateLimitRPM = 5;
 
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
