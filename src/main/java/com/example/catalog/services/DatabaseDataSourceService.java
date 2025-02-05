@@ -41,6 +41,17 @@ public class DatabaseDataSourceService implements DataSourceService {
     }
 
     @Override
+    public List<Song> getTopSongsByArtistId(String artistId, String market) throws IOException {
+        return List.of();
+    }
+
+
+    public List<Song> getTopSongsByArtistId(String artistId) throws IOException {
+        return List.of();
+    }
+
+
+    @Override
     public List<Song> getAllSongs() throws IOException {
         return List.of();
     }

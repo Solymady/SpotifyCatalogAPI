@@ -23,21 +23,25 @@ public class JSONDataSourceService implements DataSourceService {
     //albums
     @Override
     public List<Album> getAllAlbums() throws IOException {
-        JsonNode rootNode = loadJsonData("src/data/albums.json");
+        File file = new File("src/data/albums.json");
 
-        // Convert object to array
-        List<Album> albums = new ArrayList<>();
-        if (rootNode.isObject()) {
-            for (JsonNode albumNode : rootNode) {
-                Album album = objectMapper.treeToValue(albumNode, Album.class);
-                albums.add(album);
-            }
-        } else {
-            throw new IOException("Invalid JSON format: Expected an object with album IDs as keys");
+        if (!file.exists()) {
+            return new ArrayList<>(); // Return empty list if file is missing
         }
 
-        return albums;
+        JsonNode rootNode = objectMapper.readTree(file);
+        JsonNode albumsNode = rootNode.get("albums");
+
+        if (albumsNode == null || !albumsNode.isArray()) {
+            throw new IOException("Invalid JSON format: Expected 'albums' key with an array");
+        }
+
+        return objectMapper.readValue(
+                objectMapper.treeAsTokens(albumsNode),
+                objectMapper.getTypeFactory().constructCollectionType(List.class, Album.class)
+        );
     }
+
 
     @Override
     public Album getAlbumById(String id) throws IOException {
@@ -471,8 +475,44 @@ public class JSONDataSourceService implements DataSourceService {
     }
 
     @Override
-    public List<Album> getAlbumsByArtistId(String id) throws IOException {
+    public List<Album> getAlbumsByArtistId(String artistId) throws IOException {
+        List<Song> allSongs = getAllSongs(); // Get all songs
+        List<Album> artistAlbums = new ArrayList<>();
+
+        for (Song song : allSongs) {
+            // Check if the song has artists and iterate through them
+            for (Artist artist : song.getArtists()) {
+                if (artist.getId().equals(artistId)) {
+                    Album album = song.getAlbum(); // Get the album associated with the song
+                    // Avoid adding duplicate albums
+                    if (!artistAlbums.contains(album)) {
+                        artistAlbums.add(album);
+                    }
+                    break;  // If we find a match, no need to check further artists for this song
+                }
+            }
+        }
+        return artistAlbums;
+    }
+
+    @Override
+    public List<Song> getTopSongsByArtistId(String artistId, String market) throws IOException {
         return List.of();
+    }
+
+
+    public List<Song> getTopSongsByArtistId(String artistId) throws IOException {
+        List<Song> allSongs = getAllSongs();
+        List<Song> artistSongs = new ArrayList<>();
+        for (Song song : allSongs) {
+            for (Artist artist : song.getArtists()) {
+                if (artist.getId().equals(artistId)) {
+                    artistSongs.add(song);
+                    break;  // Avoid duplicate entries if multiple artists match
+                }
+            }
+        }
+        return artistSongs;
     }
 
     //songs

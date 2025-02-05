@@ -30,6 +30,8 @@ public interface DataSourceService {
 
     List<Album> getAlbumsByArtistId(String id) throws IOException;
 
+    List<Song> getTopSongsByArtistId(String artistId, String market) throws IOException;
+
     //songs
     List<Song> getAllSongs() throws IOException;
     Song getSongById(String id) throws IOException;
@@ -37,15 +39,4 @@ public interface DataSourceService {
     Song updateSong(String id, Song updatedSong) throws IOException;
     boolean deleteSong(String id) throws IOException;
 
-
-    /**
-
-    List<Album> getAllAlbums() throws IOException;
-
-    Song getSongById(String id) throws IOException;
-    List<Song> getAllSongs() throws IOException;
-
-    void createArtist(Artist artist) throws IOException;
-    void updateArtist(String id, Artist artist) throws IOException;
-    void deleteArtist(String id) throws IOException;**/
 }
